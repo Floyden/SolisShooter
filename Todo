@@ -1,0 +1,23 @@
+Scene Management:
+-Implement scenes(duh)
+-switch between multiple scenes
+
+Camera:
+- Create a movable camera
+
+Rendering:
+- implement 3D Rendering
+- pass a render scene to the renderer
+- implement a proper pipeline with different accessable shader programs
+- implement VAOs and vao Management
+
+Input:
+- Add remaining input devices
+- Map actions to a certain input
+
+Modules:
+- Figure out a way to make it work properly
+
+IO:
+- Load files
+- networking
