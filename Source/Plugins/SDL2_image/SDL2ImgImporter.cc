@@ -8,12 +8,12 @@ namespace Solis
 
 SDL2ImgImporter::SDL2ImgImporter()
 {
-
+    IMG_Init(IMG_INIT_PNG);
 }
 
 SDL2ImgImporter::~SDL2ImgImporter()
 {
-
+    IMG_Quit();
 }
 
 SPtr<Image> SDL2ImgImporter::Import(const String& path)
