@@ -77,7 +77,7 @@ void Shooter::Init()
     mProgram = Program::Create();
     mProgram->LoadFrom(gVertexShaderSource, gFragmentShaderSource);
 
-    auto img = mImageImporter->Import("Resources/Chess.png");
+    auto img = mImageImporter->Import("Resources/Floor/bricks.jpg");
     mTexture = Texture::Create(img);
 
     LoadScene();

@@ -19,6 +19,7 @@ enum class ImageFormat
 
 class Image : public Resource {
 public:
+
     /// Create an empty Image
     Image() {};
     /// Create an image with given size and format
@@ -29,6 +30,7 @@ public:
     uint32_t GetWidth() const { return mWidth; }
     uint32_t GetHeight() const { return mHeight; }
     uint32_t GetSize() const { return mData.size(); }
+    ImageFormat GetFormat() const { return mFormat; }
     const Vector<uint8_t>& GetData() const { return mData; }
 
     static int GetFormatPixelSize(ImageFormat format);

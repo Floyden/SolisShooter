@@ -1,14 +1,28 @@
 #include "SDL2ImgImporter.hh"
+#include "Image.hh"
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL.h>
+#include <bits/stdint-uintn.h>
 #include <iostream>
 
 namespace Solis
 {
 
+ImageFormat GetFormat(uint32_t sdlFormat)
+{
+    switch (sdlFormat) {
+        case SDL_PIXELFORMAT_RGBA8888:
+            return ImageFormat::eRGBA8;
+        default:
+            std::cout << "SDL2ImgImporter::GetFormat: unknown format: " << std::oct << sdlFormat << std::endl;
+    }
+
+    return ImageFormat::eRGB8;
+}
+
 SDL2ImgImporter::SDL2ImgImporter()
 {
-    IMG_Init(IMG_INIT_PNG);
+    IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG);
 }
 
 SDL2ImgImporter::~SDL2ImgImporter()
@@ -18,27 +32,30 @@ SDL2ImgImporter::~SDL2ImgImporter()
 
 SPtr<Image> SDL2ImgImporter::Import(const String& path)
 {
-    auto image = IMG_Load(path.c_str());
+    auto surface = IMG_Load(path.c_str());
 
-    if(!image) {
+    if(!surface) {
         std::cout << IMG_GetError();
         return nullptr;
     }
     
-    SDL_LockSurface(image);
+    SDL_LockSurface(surface);
 
+    auto format = GetFormat(surface->format->format);
+    uint32_t width = surface->w;
+    uint32_t height = surface->h;
     Vector<uint8_t> data;
-    for (int i = 0; i < image->h; i++)
+    for (int i = 0; i < height; i++)
     {
         data.insert(data.end(), 
-            &reinterpret_cast<char*>(image->pixels)[i * image->pitch], 
-            &reinterpret_cast<char*>(image->pixels)[i * image->pitch + image->pitch]);
+            &reinterpret_cast<char*>(surface->pixels)[i * surface->pitch], 
+            &reinterpret_cast<char*>(surface->pixels)[i * surface->pitch + surface->pitch]);
     }
         
-    SDL_UnlockSurface(image);
+    SDL_UnlockSurface(surface);
+    SDL_FreeSurface(surface);
 
-    SDL_FreeSurface(image);
-    return std::make_shared<Image>(image->w, image->h, ImageFormat::eRGBA8, data);
+    return std::make_shared<Image>(width, height, format, data);
 }
 
 } // namespace Solis
