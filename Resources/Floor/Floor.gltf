@@ -18,8 +18,8 @@
             "name" : "Cube",
             "scale" : [
                 1,
-                0.06326562166213989,
-                1
+                1,
+                0.06326562166213989
             ]
         }
     ],
@@ -28,10 +28,6 @@
             "doubleSided" : true,
             "name" : "Material",
             "pbrMetallicRoughness" : {
-                "baseColorTexture" : {
-                    "index" : 0,
-                    "texCoord" : 0
-                },
                 "metallicFactor" : 0,
                 "roughnessFactor" : 1
             }
@@ -53,18 +49,6 @@
             ]
         }
     ],
-    "textures" : [
-        {
-            "source" : 0
-        }
-    ],
-    "images" : [
-        {
-            "mimeType" : "image/jpeg",
-            "name" : "bricks",
-            "uri" : "bricks.jpg"
-        }
-    ],
     "accessors" : [
         {
             "bufferView" : 0,
@@ -72,13 +56,13 @@
             "count" : 140,
             "max" : [
                 5.031617164611816,
-                1,
-                3.0486977100372314
+                2.9402618408203125,
+                0.10000002384185791
             ],
             "min" : [
                 -4.9923930168151855,
-                -1,
-                -2.9402618408203125
+                -3.0486977100372314,
+                9.536744300930877e-07
             ],
             "type" : "VEC3"
         },
