@@ -6,13 +6,10 @@
 namespace Solis
 {
 
-class Node;
-using SharedNode = SPtr<Node>;
-
 class Node {
 public:
 
-    static SharedNode Create(const String& name) 
+    static SPtr<Node> Create(const String& name) 
     {
         auto res = SPtr<Node>(new Node());
         res->mEntity = Entity::Create(name);

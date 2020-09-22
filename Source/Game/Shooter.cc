@@ -70,8 +70,14 @@ void Shooter::Init()
     mProgram = Program::Create();
     mProgram->LoadFrom(gVertexShaderSource, gFragmentShaderSource);
 
-    auto img = Image::FromFile("resources/Chess.png");
+    auto img = Image::FromFile("Resources/Chess.png");
     mTexture = Texture::Create(img);
+
+    LoadScene();
+}
+
+void Shooter::LoadScene()
+{
 }
 
 void Shooter::OnMouseMove(InputMouseMovementEvent* event)

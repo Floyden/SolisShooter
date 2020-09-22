@@ -1,6 +1,6 @@
 #pragma once
 #include "Game.hh"
-#include "Scene/SceneNode.hh"
+#include "Scene/Node.hh"
 #include "Scene/Camera.hh"
 #include "Render/Mesh.hh"
 #include "Event.hh"
@@ -30,6 +30,7 @@ public:
 
 private:
     void UpdateInput(float delta);
+    void LoadScene();
 
     std::vector<RenderComponent*> mRenderComponents;
     int mSelectedTile;
@@ -42,7 +43,7 @@ private:
     std::vector<SPtr<Mesh>> mMeshes;
 
     SPtr<Camera> mCamera;
-    SharedNode mRoot;
+    SPtr<Node> mRoot;
 };
 
 } // namespace Solis
