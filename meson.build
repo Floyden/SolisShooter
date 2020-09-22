@@ -23,6 +23,7 @@ source = [
     'Source/Render/Program.cc',
     'Source/Render/Texture.cc',
     'Source/Render/Renderer.cc',
-    'Source/Plugins/assimp/AssimpImporter.cc'
+    'Source/Plugins/assimp/AssimpImporter.cc',
+    'Source/Plugins/SDL2_image/SDL2ImgImporter.cc'
 ]
 executable('demo', source, include_directories : incdir, dependencies : [libgl, libsdl, libglew, libsdl_image, libassimp])

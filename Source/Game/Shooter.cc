@@ -71,6 +71,9 @@ void Shooter::Init()
         mMeshes[i]->mIndexBuffer->WriteData(0, gQuadDataIdx.size() * sizeof(uint32_t), gQuadDataIdx.data());
     }
 
+    auto mesh = mImporter->ImportMesh("Resources/Floor/Floor.gltf");
+    mMeshes.push_back(mesh);
+
     mProgram = Program::Create();
     mProgram->LoadFrom(gVertexShaderSource, gFragmentShaderSource);
 
@@ -82,7 +85,6 @@ void Shooter::Init()
 
 void Shooter::LoadScene()
 {
-    mImporter->ImportScene("Resources/Floor/Floor.gltf");
 }
 
 void Shooter::OnMouseMove(InputMouseMovementEvent* event)
@@ -154,6 +156,14 @@ void Shooter::UpdateInput(float delta)
     dir.y = 0;
 
     mCamera->GetPosition() += dir * delta * MOVEMENT_SPEED;
+
+    float up = .0f;
+    if(input->IsKeyPressed(SDLK_SPACE))
+        up += 1.f;
+    if(input->IsKeyPressed(SDLK_LSHIFT))
+        up -= 1.0f;
+
+    mCamera->GetPosition().y += up * delta * MOVEMENT_SPEED;
 }
 
 void Shooter::Render()
@@ -189,7 +199,7 @@ void Shooter::Render()
         counter *= -1.0f;
 
         mProgram->SetUniformMat4f("uMVP", mvp);
-        mRender->DrawIndexed(gQuadDataIdx.size());
+        mRender->DrawIndexed(mesh->mIndexBuffer->GetIndexCount());
     }
 
     mWindow->SwapWindow();
