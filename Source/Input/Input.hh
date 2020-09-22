@@ -20,12 +20,14 @@ public:
     static Input* Get();
 
     bool IsKeyPressed(int keycode) const;
+    bool IsButtonPressed(int button) const;
 
 private:
     void OnKeyEvent(InputKeyEvent* key);
     void OnMouseButtonEvent(InputMouseButtonEvent* key);
 
     std::set<int> mPressedKeys;
+    int mButtonMask = 0;
     
     mutable std::mutex mMutex;
 };
