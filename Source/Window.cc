@@ -145,6 +145,14 @@ void Window::_HandleWindowEvents(SDL_WindowEvent event)
 {
     switch (event.event)
     {
+    case SDL_WINDOWEVENT_SHOWN:
+    case SDL_WINDOWEVENT_HIDDEN:
+    case SDL_WINDOWEVENT_EXPOSED:
+    case SDL_WINDOWEVENT_MOVED:
+    case SDL_WINDOWEVENT_CLOSE:
+    case SDL_WINDOWEVENT_TAKE_FOCUS:
+        break;
+
     case SDL_WINDOWEVENT_FOCUS_LOST:
         mFocused = false;
         SendWindowEvent(WindowEventType::FocusLost);
@@ -160,7 +168,7 @@ void Window::_HandleWindowEvents(SDL_WindowEvent event)
         SendWindowEvent(WindowEventType::Leave);
         break;
     default:
-        std::cout << "Unhandled Window Event: " << event.event << std::endl;
+        std::cout << "Unhandled Window Event: " << (uint32_t) event.event << std::endl;
         break;
     }
 }
