@@ -3,6 +3,7 @@ libsdl = dependency('SDL2')
 libsdl_image = dependency('SDL2_image')
 libgl = dependency('GL')
 libglew = dependency('GLEW')
+libassimp = dependency('assimp')
 
 incdir = include_directories('./Source')
 
@@ -21,6 +22,7 @@ source = [
     'Source/Render/IndexBuffer.cc',
     'Source/Render/Program.cc',
     'Source/Render/Texture.cc',
-    'Source/Render/Renderer.cc'
+    'Source/Render/Renderer.cc',
+    'Source/Plugins/assimp/AssimpImporter.cc'
 ]
-executable('demo', source, include_directories : incdir, dependencies : [libgl, libsdl, libglew, libsdl_image])
+executable('demo', source, include_directories : incdir, dependencies : [libgl, libsdl, libglew, libsdl_image, libassimp])
