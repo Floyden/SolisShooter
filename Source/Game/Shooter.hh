@@ -1,4 +1,6 @@
 #pragma once
+#include <array>
+#include "Defines.hh"
 #include "Game.hh"
 #include "Scene/Node.hh"
 #include "Scene/Camera.hh"
@@ -6,7 +8,7 @@
 #include "Event.hh"
 #include "Math.hh"
 #include "Input/InputEvent.hh"
-#include <array>
+#include "Plugins/assimp/AssimpImporter.hh"
 
 namespace Solis
 {
@@ -44,6 +46,7 @@ private:
 
     SPtr<Camera> mCamera;
     SPtr<Node> mRoot;
+    UPtr<AssimpImporter> mImporter;
 };
 
 } // namespace Solis

@@ -1,4 +1,5 @@
 #include "Shooter.hh"
+#include "Plugins/assimp/AssimpImporter.hh"
 #include "RandomThings.hh"
 #include "Image.hh"
 #include "Input/Input.hh"
@@ -37,6 +38,7 @@ void Shooter::Init()
     events->Subscribe(this, &Shooter::OnMouseMove);
     events->Subscribe(this, &Shooter::OnWindowEvent);
 
+    mImporter = std::make_unique<AssimpImporter>();
 
     // Init Shooter
     mRoot = Node::Create("Root");
@@ -78,6 +80,7 @@ void Shooter::Init()
 
 void Shooter::LoadScene()
 {
+    mImporter->ImportScene("Resources/Floor/Floor.gltf");
 }
 
 void Shooter::OnMouseMove(InputMouseMovementEvent* event)
