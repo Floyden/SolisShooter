@@ -5,6 +5,9 @@
 #include <bits/stdint-uintn.h>
 #include <iostream>
 
+namespace Solis
+{
+    
 Image::Image(uint32_t width, uint32_t height, ImageFormat format) 
 {
     int size = GetDstImageSize(width, height, format);
@@ -31,15 +34,15 @@ Image::Image(uint32_t width, uint32_t height, ImageFormat format, const Vector<u
     mData = data;
 }
 
-SPtr<Image> Image::FromFile(const String& path) {
-
+/// TODO: move this to an importer
+SPtr<Image> Image::FromFile(const String& path) 
+{ 
     auto image = IMG_Load(path.c_str());
 
     if(!image) {
         std::cout << IMG_GetError();
         return nullptr;
     }
-
     
     SDL_LockSurface(image);
 
@@ -89,3 +92,5 @@ int Image::GetFormatPixelSize(ImageFormat format)
     }
     return 0;
 }
+
+} // namespace Solis

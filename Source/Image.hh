@@ -2,6 +2,9 @@
 #include "Core/Resource.hh"
 #include <bits/stdint-uintn.h>
 
+namespace Solis
+{
+
 enum class ImageFormat
 {
     eR8,
@@ -38,3 +41,5 @@ private:
     uint32_t mHeight;
     ImageFormat mFormat;
 };
+
+} // namespace Solis

@@ -2,6 +2,9 @@
 #include "Defines.hh"
 #include "Image.hh"
 
+namespace Solis
+{
+
 class Texture {
 public:
     ~Texture();
@@ -11,3 +14,5 @@ public:
 private:
     uint32_t mHandle;
 };
+
+} // namespace Solis

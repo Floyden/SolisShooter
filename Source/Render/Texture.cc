@@ -1,6 +1,9 @@
 #include "Texture.hh"
 #include <GL/glew.h>
 
+namespace Solis
+{
+
 SPtr<Texture> Texture::Create(SPtr<Image> image)
 {
     auto res = std::make_shared<Texture>();
@@ -24,3 +27,5 @@ Texture::~Texture()
 {
     glDeleteTextures(1, &mHandle);
 }
+
+} // namespace Solis
