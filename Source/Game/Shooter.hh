@@ -9,6 +9,7 @@
 #include "Math.hh"
 #include "Input/InputEvent.hh"
 #include "Plugins/assimp/AssimpImporter.hh"
+#include "Plugins/SDL2_image/SDL2ImgImporter.hh"
 
 namespace Solis
 {
@@ -46,7 +47,9 @@ private:
 
     SPtr<Camera> mCamera;
     SPtr<Node> mRoot;
+
     UPtr<AssimpImporter> mImporter;
+    UPtr<SDL2ImgImporter> mImageImporter;
 };
 
 } // namespace Solis

@@ -19,8 +19,6 @@ enum class ImageFormat
 
 class Image : public Resource {
 public:
-    static SPtr<Image> FromFile(const String& path);
-
     /// Create an empty Image
     Image() {};
     /// Create an image with given size and format

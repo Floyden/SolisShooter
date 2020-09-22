@@ -1,4 +1,5 @@
 #include "Shooter.hh"
+#include "Plugins/SDL2_image/SDL2ImgImporter.hh"
 #include "Plugins/assimp/AssimpImporter.hh"
 #include "RandomThings.hh"
 #include "Image.hh"
@@ -39,6 +40,7 @@ void Shooter::Init()
     events->Subscribe(this, &Shooter::OnWindowEvent);
 
     mImporter = std::make_unique<AssimpImporter>();
+    mImageImporter = std::make_unique<SDL2ImgImporter>();
 
     // Init Shooter
     mRoot = Node::Create("Root");
@@ -72,7 +74,7 @@ void Shooter::Init()
     mProgram = Program::Create();
     mProgram->LoadFrom(gVertexShaderSource, gFragmentShaderSource);
 
-    auto img = Image::FromFile("Resources/Chess.png");
+    auto img = mImageImporter->Import("Resources/Chess.png");
     mTexture = Texture::Create(img);
 
     LoadScene();

@@ -1,6 +1,4 @@
 #include "Image.hh"
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL.h>
 #include <algorithm>
 #include <bits/stdint-uintn.h>
 #include <iostream>
@@ -32,33 +30,6 @@ Image::Image(uint32_t width, uint32_t height, ImageFormat format, const Vector<u
     mHeight = height;
     mFormat = format;
     mData = data;
-}
-
-/// TODO: move this to an importer
-SPtr<Image> Image::FromFile(const String& path) 
-{ 
-    auto image = IMG_Load(path.c_str());
-
-    if(!image) {
-        std::cout << IMG_GetError();
-        return nullptr;
-    }
-    
-    SDL_LockSurface(image);
-
-    Vector<uint8_t> data;
-    for (int i = 0; i < image->h; i++)
-    {
-        data.insert(data.end(), 
-            &reinterpret_cast<char*>(image->pixels)[i * image->pitch], 
-            &reinterpret_cast<char*>(image->pixels)[i * image->pitch + image->pitch]);
-    }
-        
-    SDL_UnlockSurface(image);
-
-    SDL_FreeSurface(image);
-    auto res = std::make_shared<Image>(image->w, image->h, ImageFormat::eRGBA8, data);
-    return res;
 }
 
 int Image::GetDstImageSize(uint32_t width, uint32_t height, ImageFormat format)
