@@ -68,7 +68,8 @@ SPtr<Mesh> AssimpImporter::ImportMesh(const String& path)
     for(size_t i = 0; i < ai_mesh->mNumVertices; i++)
     {
         auto pos = ai_mesh->mVertices[i];
-        positions[i] = Vec3(pos.x, pos.y, pos.z);
+        // TODO:  z and y are somehow flipped
+        positions[i] = Vec3(pos.x, pos.z, pos.y);
 
         if(hasUVs)
         {
