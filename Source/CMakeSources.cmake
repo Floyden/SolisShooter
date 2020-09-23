@@ -1,0 +1,20 @@
+set(SOLIS_SOURCE
+    "Source/Image.cc"
+    "Source/Main.cc"
+    "Source/Module.cc"
+    "Source/Window.cc"
+    "Source/Game/LevelGenerator.cc"
+    "Source/Game/Shooter.cc"
+    "Source/Input/Input.cc"
+    "Source/Input/InputEvent.cc"
+    "Source/Render/VAOManager.cc"
+    "Source/Render/VertexData.cc"
+    "Source/Render/VertexBuffer.cc"
+    "Source/Render/IndexBuffer.cc"
+    "Source/Render/Program.cc"
+    "Source/Render/Texture.cc"
+    "Source/Render/Renderer.cc"
+    "Source/Plugins/assimp/AssimpImporter.cc"
+    "Source/Plugins/SDL2_image/SDL2ImgImporter.cc"
+)
+
