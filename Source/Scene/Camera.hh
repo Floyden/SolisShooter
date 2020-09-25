@@ -7,10 +7,10 @@ namespace Solis
 class Camera 
 {
 public:
-    Camera(float fov, float aspect, float near, float far) :
+    Camera(float pFov, float pAspect, float pNear, float pFar) :
         mRotation(1.0, 0.0, 0.0, 0.0)
     {
-        mProjection = glm::perspective(fov, aspect, near, far);
+        mProjection = glm::perspective(pFov, pAspect, pNear, pFar);
     }
 
     const Vec3& GetPosition() const 
