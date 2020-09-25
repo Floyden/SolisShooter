@@ -4,7 +4,6 @@
 #include <assimp/scene.h> 
 #include <assimp/postprocess.h> 
 #include <assimp/DefaultLogger.hpp> 
-#include <bits/stdint-uintn.h>
 #include <cstddef>
 #include "Render/IndexBuffer.hh"
 #include "Render/VertexAttributes.hh"

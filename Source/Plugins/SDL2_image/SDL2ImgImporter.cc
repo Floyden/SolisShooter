@@ -2,7 +2,6 @@
 #include "Image.hh"
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL.h>
-#include <bits/stdint-uintn.h>
 #include <iostream>
 
 namespace Solis

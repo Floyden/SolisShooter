@@ -1,6 +1,5 @@
 #pragma once
 #include "Core/Resource.hh"
-#include <bits/stdint-uintn.h>
 
 namespace Solis
 {

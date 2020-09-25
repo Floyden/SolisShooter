@@ -1,6 +1,5 @@
 #include "Image.hh"
 #include <algorithm>
-#include <bits/stdint-uintn.h>
 #include <iostream>
 
 namespace Solis
