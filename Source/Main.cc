@@ -4,7 +4,14 @@
 #include "Game/Shooter.hh"
 
 
+#ifdef _WIN32
+int WINAPI WinMain(HINSTANCE hinstance,
+    HINSTANCE hprevinstance,
+    LPSTR lpcmdline,
+    int ncmdshow) {
+#elif __linux__
 int main(int argc, char* argv[]) {
+#endif
     SDL_Init(SDL_INIT_EVERYTHING);
     {
 
