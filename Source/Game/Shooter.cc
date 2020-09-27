@@ -71,14 +71,23 @@ void Shooter::Init()
         mMeshes[i]->mIndexBuffer->WriteData(0, gQuadDataIdx.size() * sizeof(uint32_t), gQuadDataIdx.data());
     }
 
-    auto mesh = mImporter->ImportMesh("Resources/Floor/Floor.gltf");
-    mMeshes.push_back(mesh);
+
+    //mMeshes.push_back(mesh);
 
     mProgram = Program::Create();
     mProgram->LoadFrom(gVertexShaderSource, gFragmentShaderSource);
 
-    auto img = mImageImporter->Import("Resources/Floor/bricks.jpg");
+    auto img = mImageImporter->Import("Resources/Floor/bricks.png");
     mTexture = Texture::Create(img);
+
+
+    auto mesh = mImporter->ImportMesh("Resources/Floor/Floor.gltf");
+    auto material = std::make_shared<DefaultMaterial>();
+    material->SetTexture(mTexture);
+
+    mRenderable = std::make_shared<Renderable>();
+    mRenderable->SetMesh(mesh);
+    mRenderable->SetMaterial(material);
 
     LoadScene();
 }

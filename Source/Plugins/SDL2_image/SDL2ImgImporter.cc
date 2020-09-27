@@ -52,7 +52,7 @@ SPtr<Image> SDL2ImgImporter::Import(const String& path)
     }
         
     SDL_UnlockSurface(surface);
-    SDL_FreeSurface(surface);
+    //SDL_FreeSurface(surface);
 
     return std::make_shared<Image>(width, height, format, data);
 }

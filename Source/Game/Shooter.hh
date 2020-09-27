@@ -5,6 +5,7 @@
 #include "Scene/Node.hh"
 #include "Scene/Camera.hh"
 #include "Render/Mesh.hh"
+#include "Render/Renderable.hh"
 #include "Event.hh"
 #include "Math.hh"
 #include "Input/InputEvent.hh"
@@ -35,7 +36,7 @@ private:
     void UpdateInput(float delta);
     void LoadScene();
 
-    std::vector<RenderComponent*> mRenderComponents;
+    Vector<RenderComponent*> mRenderComponents;
     int mSelectedTile;
     
     // Render Resources
@@ -43,7 +44,8 @@ private:
     
     SPtr<Program> mProgram;
     SPtr<Texture> mTexture;
-    std::vector<SPtr<Mesh>> mMeshes;
+    Vector<SPtr<Mesh>> mMeshes;
+    SPtr<Renderable> mRenderable;
 
     SPtr<Camera> mCamera;
     SPtr<Node> mRoot;

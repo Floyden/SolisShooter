@@ -15,18 +15,23 @@ find_package(assimp REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(glm REQUIRED)
+find_package(libpng REQUIRED)
 
 include_directories("Source")
 include_directories(${SDL2_INCLUDE_DIRS})
 
 add_executable(SolisShooter ${SOLIS_SOURCE})
 
+set_target_properties(${PROJECT_NAME} PROPERTIES
+LINK_FLAGS /SUBSYSTEM:WINDOWS
+)
+
 target_link_libraries(${PROJECT_NAME} SDL2)
-target_link_libraries(${PROJECT_NAME} SDL2main)
 target_link_libraries(${PROJECT_NAME} SDL2_image)
 target_link_libraries(${PROJECT_NAME} assimp)
-target_link_libraries(${PROJECT_NAME} OpenGL)
-target_link_libraries(${PROJECT_NAME} GLEW)
+target_link_libraries(${PROJECT_NAME} OpenGL32)
+target_link_libraries(${PROJECT_NAME} GLEW32)
+target_link_libraries(${PROJECT_NAME} libpng16)
 
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})

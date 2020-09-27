@@ -11,10 +11,15 @@ set(SOLIS_SOURCE
     "Source/Render/VertexData.cc"
     "Source/Render/VertexBuffer.cc"
     "Source/Render/IndexBuffer.cc"
+    "Source/Render/Material.cc"
     "Source/Render/Program.cc"
     "Source/Render/Texture.cc"
     "Source/Render/Renderer.cc"
     "Source/Plugins/assimp/AssimpImporter.cc"
     "Source/Plugins/SDL2_image/SDL2ImgImporter.cc"
+    "Source/Plugins/png/PngImgImporter.cc"
 )
 
+set(SOLIS_HEADERS
+    "Source/Image.hh"
+)
