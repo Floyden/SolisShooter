@@ -21,7 +21,10 @@ Shooter::Shooter()
 
 Shooter::~Shooter()
 {
-
+    Events::Get()->Unsubscribe(this, &Shooter::OnWindowEvent);
+    Events::Get()->Unsubscribe(this, &Shooter::OnMouseButton);
+    Events::Get()->Unsubscribe(this, &Shooter::OnMouseMove);
+    Events::Get()->Unsubscribe(this, &Shooter::OnKeyEvent);
 }
 
 void Shooter::Init()
@@ -37,6 +40,7 @@ void Shooter::Init()
     
     events->Subscribe(this, &Shooter::OnKeyEvent);
     events->Subscribe(this, &Shooter::OnMouseMove);
+    events->Subscribe(this, &Shooter::OnMouseButton);
     events->Subscribe(this, &Shooter::OnWindowEvent);
 
     mImporter = std::make_unique<AssimpImporter>();
@@ -71,9 +75,6 @@ void Shooter::Init()
         mMeshes[i]->mIndexBuffer->WriteData(0, gQuadDataIdx.size() * sizeof(uint32_t), gQuadDataIdx.data());
     }
 
-
-    //mMeshes.push_back(mesh);
-
     mProgram = Program::Create();
     mProgram->LoadFrom(gVertexShaderSource, gFragmentShaderSource);
 
@@ -82,12 +83,14 @@ void Shooter::Init()
 
 
     auto mesh = mImporter->ImportMesh("Resources/Floor/Floor.gltf");
-    auto material = std::make_shared<DefaultMaterial>();
-    material->SetTexture(mTexture);
+    mMeshes.push_back(mesh);
+    mMaterial = std::make_shared<DefaultMaterial>();
+    mMaterial->SetTexture(mTexture);
+    mMaterial->SetProgram(mProgram);
 
     mRenderable = std::make_shared<Renderable>();
     mRenderable->SetMesh(mesh);
-    mRenderable->SetMaterial(material);
+    mRenderable->SetMaterial(mMaterial);
 
     LoadScene();
 }
@@ -104,6 +107,9 @@ void Shooter::OnMouseMove(InputMouseMovementEvent* event)
     auto quatX = glm::normalize(glm::angleAxis(-MOUSE_SENS * event->GetRelative().x, Vec3{0, 1, 0}));
     auto res = glm::normalize(mCamera->GetRotation() * quatY * quatX);
     mCamera->SetRotation(res);
+}
+void Shooter::OnMouseButton(InputMouseButtonEvent* event)
+{
 }
 
 void Shooter::OnWindowEvent(WindowEvent* event)
@@ -173,14 +179,15 @@ void Shooter::UpdateInput(float delta)
         up -= 1.0f;
 
     mCamera->GetPosition().y += up * delta * MOVEMENT_SPEED;
+
 }
 
 void Shooter::Render()
 {
     mRender->Clear(0.f, 0.5f, 1.f, 1.0f);
 
-    mRender->BindProgram(mProgram);
-    mRender->BindTexture(mTexture);
+    mRender->BindProgram(mMaterial->GetProgram());
+    mRender->BindTexture(mMaterial->GetTexture());
 
     auto mvp = mCamera->GetProjection() * mCamera->GetView();
 
@@ -210,6 +217,8 @@ void Shooter::Render()
         mProgram->SetUniformMat4f("uMVP", mvp);
         mRender->DrawIndexed(mesh->mIndexBuffer->GetIndexCount());
     }
+
+    
 
     mWindow->SwapWindow();
 }

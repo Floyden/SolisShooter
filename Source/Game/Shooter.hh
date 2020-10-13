@@ -30,6 +30,7 @@ public:
 
     void OnKeyEvent(InputKeyEvent*);
     void OnMouseMove(InputMouseMovementEvent*);
+    void OnMouseButton(InputMouseButtonEvent*);
     void OnWindowEvent(WindowEvent*);
 
 private:
@@ -43,9 +44,10 @@ private:
     SPtr<Renderer> mRender;
     
     SPtr<Program> mProgram;
-    SPtr<Texture> mTexture;
+    HTexture mTexture;
     Vector<SPtr<Mesh>> mMeshes;
     SPtr<Renderable> mRenderable;
+    SPtr<DefaultMaterial> mMaterial;
 
     SPtr<Camera> mCamera;
     SPtr<Node> mRoot;

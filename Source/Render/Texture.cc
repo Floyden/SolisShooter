@@ -48,7 +48,7 @@ GLenum GetGLFormat(ImageFormat format)
 } 
 
 
-SPtr<Texture> Texture::Create(SPtr<Image> image)
+HTexture Texture::Create(SPtr<Image> image)
 {
     auto res = std::make_shared<Texture>();
 
@@ -67,7 +67,7 @@ SPtr<Texture> Texture::Create(SPtr<Image> image)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-    return res;
+    return HTexture(res);
 }
 
 Texture::~Texture()

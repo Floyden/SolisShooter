@@ -3,8 +3,4 @@
 namespace Solis
 {
 
-void DefaultMaterial::Bind()
-{
-}
-
 } // namespace Solis

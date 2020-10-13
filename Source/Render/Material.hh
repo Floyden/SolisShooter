@@ -13,7 +13,15 @@ public:
 	virtual ~Material() {}
 	virtual void Bind() = 0;
 
+	const HTexture& GetTexture() const { return mTexture; }
+	void SetTexture(const HTexture& texture) { mTexture = texture; }
+
+	SPtr<Program> GetProgram() const { return mProgram; }
+	void SetProgram(const SPtr<Program> program) { mProgram = program; }
+
 private:
+	HTexture mTexture;
+	SPtr<Program> mProgram;
 
 };
 
@@ -21,11 +29,17 @@ private:
 class DefaultMaterial : public Material
 {
 public:
+	DefaultMaterial() {};
+	~DefaultMaterial() {};
+/*
 	SPtr<Texture> GetTexture() const { return mTexture; }
 	void SetTexture(const SPtr<Texture> texture) { mTexture = texture; }
 
-	void Bind();
+	SPtr<Program> GetProgram() const { return mProgram; }
+	void SetProgram(const SPtr<Program> program) { mProgram = program; }*/
+
+	void Bind() {  };
 private:
-	SPtr<Texture> mTexture;
 };
+
 } // namespace Solis
