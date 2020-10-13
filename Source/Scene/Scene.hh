@@ -1,5 +1,5 @@
 #pragma once
-#include "SceneNode.hh"
+#include "Scene.hh"
 #include "Camera.hh"
 
 class Scene {
