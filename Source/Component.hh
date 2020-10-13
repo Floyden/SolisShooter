@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 #include <typeindex>
+#include <typeinfo>
 #include <iostream>
 
 #include "Module.hh"
@@ -48,7 +49,7 @@ public:
     template<class T>
     void RemoveComponent(int entity) 
     {
-        auto tId = typeid(T);
+        auto& tId = typeid(T);
         auto ptr = mEntityComponents[entity][tId];
 
         mEntityComponents[entity].erase(tId);
