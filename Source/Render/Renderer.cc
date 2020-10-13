@@ -12,6 +12,9 @@ static UPtr<VAOManager> sVaoManager;
 Renderer::Renderer() : mBoundProgram(nullptr), mBoundAttributes(nullptr), mBoundBuffers({nullptr}), mBoundIndexBuffer(nullptr) {
     sVaoManager = std::make_unique<VAOManager>();
     //S_MODULE_MANAGER->AddModule<VAOManager>();
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
 }
 
 Renderer::~Renderer() {
@@ -22,7 +25,7 @@ Renderer::~Renderer() {
 void Renderer::Clear(float r, float g, float b, float a) 
 {
     glClearColor(.0f, 0.5f, 1.f, 0.f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Renderer::BindVertexAttributes(SPtr<VertexAttributes> attribs)
