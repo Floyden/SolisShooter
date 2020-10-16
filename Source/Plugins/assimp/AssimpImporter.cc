@@ -58,11 +58,11 @@ SPtr<Mesh> AssimpImporter::ImportMesh(const String& path)
     Vector<Vec3> positions(ai_mesh->mNumVertices);
     Vector<Vec2> uvs(ai_mesh->mNumVertices);
     //std::vector<Vec3> colors(ai_mesh->mNumVertices);
-    //std::vector<Vec3> normals(ai_mesh->mNumVertices);
+    std::vector<Vec3> normals(ai_mesh->mNumVertices);
 
     bool hasUVs = ai_mesh->HasTextureCoords(0);
     //bool hasColor = ai_mesh->HasVertexColors(0);
-    //bool hasNormals = ai_mesh->HasNormals();
+    bool hasNormals = ai_mesh->HasNormals();
     
     for(size_t i = 0; i < ai_mesh->mNumVertices; i++)
     {
@@ -72,8 +72,13 @@ SPtr<Mesh> AssimpImporter::ImportMesh(const String& path)
 
         if(hasUVs)
         {
-            auto uv = ai_mesh->mTextureCoords[0][i];
+            auto& uv = ai_mesh->mTextureCoords[0][i];
             uvs[i] = Vec2(uv.x, uv.y);
+        }
+        if(hasNormals)
+        {
+            auto& normal = ai_mesh->mNormals[i];
+            normals[i] = Vec3(normal.x, normal.y, normal.z);
         }
     }
 
@@ -106,6 +111,12 @@ SPtr<Mesh> AssimpImporter::ImportMesh(const String& path)
         auto uvBuffer = VertexBuffer::Create({ai_mesh->mNumVertices * 2, sizeof(float)});
         uvBuffer->WriteData(0, uvs.size() * sizeof(uvs[0]), uvs.data());
         mesh->mVertexData->SetBuffer(1, uvBuffer);
+    }
+    if (hasNormals)
+    {
+        auto normalBuffer = VertexBuffer::Create({ai_mesh->mNumVertices * 3, sizeof(float)});
+        normalBuffer->WriteData(0, normals.size() * sizeof(normals[0]), normals.data());
+        mesh->mVertexData->SetBuffer(2, normalBuffer);
     }
 
     mesh->mIndexBuffer = IndexBuffer::Create({static_cast<uint32_t>(indices.size())});
