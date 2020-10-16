@@ -18,7 +18,7 @@ AssimpImporter::AssimpImporter()
 {
     DefaultLogger::create("", Logger::VERBOSE);
     DefaultLogger::get()
-        ->attachStream(new AssimpLogStream(), Assimp::Logger::Info | Assimp::Logger::Err | Assimp::Logger::Warn);
+        ->attachStream(new AssimpLogStream(), /*Assimp::Logger::Info |*/ Assimp::Logger::Err | Assimp::Logger::Warn);
 }
 
 AssimpImporter::~AssimpImporter()
