@@ -47,7 +47,7 @@ SPtr<Mesh> AssimpImporter::ImportMesh(const String& path)
 {
     Importer importer;
     const aiScene* scene = importer.ReadFile(path, 
-        aiProcess_CalcTangentSpace);
+        aiProcess_CalcTangentSpace | aiProcess_GenNormals);
     
     if(!scene->mNumMeshes)
         return nullptr;
@@ -98,6 +98,8 @@ SPtr<Mesh> AssimpImporter::ImportMesh(const String& path)
     attributes.push_back(VertexAttribute{0, 3, 0x1406, 0, 0});
     if(hasUVs)
         attributes.push_back(VertexAttribute{1, 2, 0x1406, 0, 0});
+    if(hasNormals)
+        attributes.push_back(VertexAttribute{2, 3, 0x1406, 0, 0});
 
     mesh->mAttributes = VertexAttributes::Create(attributes);
     mesh->mVertexData = std::make_shared<VertexData>();
