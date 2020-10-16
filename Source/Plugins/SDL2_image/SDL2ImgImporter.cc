@@ -10,8 +10,10 @@ namespace Solis
 ImageFormat GetFormat(uint32_t sdlFormat)
 {
     switch (sdlFormat) {
-        case SDL_PIXELFORMAT_RGBA8888:
+        case SDL_PIXELFORMAT_RGBA32:
             return ImageFormat::eRGBA8;
+        case SDL_PIXELFORMAT_RGB24:
+            return ImageFormat::eRGB8;
         default:
             std::cout << "SDL2ImgImporter::GetFormat: unknown format: " << std::oct << sdlFormat << std::endl;
     }
