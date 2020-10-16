@@ -104,8 +104,7 @@ void Shooter::Init()
     LoadScene();
 
     // TODO: MOVE THIS
-    glGenFramebuffers(1, &mFrameBuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, mFrameBuffer);
+
 
     glGenTextures(1, &mRenderTexture);
     glBindTexture(GL_TEXTURE_2D, mRenderTexture);
@@ -139,6 +138,9 @@ void Shooter::Init()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+/*
+    glGenFramebuffers(1, &mFrameBuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, mFrameBuffer);
 
     glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, mRenderTexture, 0);
     glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, mNormalTexture, 0);
@@ -148,13 +150,19 @@ void Shooter::Init()
 
     if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         std::cout << "Error code: " << glGetError() << std::endl;
-
+*/
     mRenderTarget = std::make_shared<Mesh>();
     mRenderTarget->mAttributes = VertexAttributes::Create({
         VertexAttribute{0, 3, GL_FLOAT, GL_FALSE, 0}});
 
     mRenderTarget->mVertexData = std::make_shared<VertexData>();
     mRenderTarget->mVertexData->SetBuffer(0, quadData2);
+
+    mFrame = std::make_shared<Framebuffer>();
+    mFrame->BindTexture(0, mRenderTexture);
+    mFrame->BindTexture(1, mNormalTexture);
+    mFrame->BindDepthbuffer(mDepthTexture);
+    mFrame->Build();
 }
 
 void Shooter::LoadScene()
@@ -246,7 +254,8 @@ void Shooter::UpdateInput(float delta)
 
 void Shooter::Render()
 {
-    glBindFramebuffer(GL_FRAMEBUFFER, mFrameBuffer);
+    mFrame->Bind();
+    //glBindFramebuffer(GL_FRAMEBUFFER, mFrameBuffer);
     glViewport(0,0,mWindow->GetWidth(), mWindow->GetHeight());
 
     mRender->Clear(0.f, 0.5f, 1.f, 1.0f);

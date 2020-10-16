@@ -6,6 +6,7 @@
 #include "Scene/Camera.hh"
 #include "Render/Mesh.hh"
 #include "Render/Renderable.hh"
+#include "Render/Framebuffer.hh"
 #include "Event.hh"
 #include "Math.hh"
 #include "Input/InputEvent.hh"
@@ -62,6 +63,7 @@ private:
     uint32_t mRenderTexture;
     uint32_t mNormalTexture;
     uint32_t mDepthTexture;
+    SPtr<Framebuffer> mFrame;
 };
 
 } // namespace Solis
