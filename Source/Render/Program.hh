@@ -15,6 +15,7 @@ public:
     void SetUniform1f(const String& name, float value);
     void SetUniform2f(const String& name, const Vec2& value);
     void SetUniform3f(const String& name, const Vec3& value);
+    void SetUniform4f(const String& name, const Vec4& value);
 
     void SetUniformMat4f(const String& name, const Matrix4& value);
 

@@ -30,6 +30,12 @@ void Program::SetUniform3f(const std::string& name, const Vec3& value)
     glUniform3f(loc, value.x, value.y, value.z);
 }
 
+void Program::SetUniform4f(const std::string& name, const Vec4& value)
+{
+    auto loc = glGetUniformLocation(mHandle, name.c_str());
+    glUniform4f(loc, value.x, value.y, value.z, value.w);
+}
+
 void Program::SetUniformMat4f(const std::string& name, const Matrix4& value)
 {
     auto loc = glGetUniformLocation(mHandle, name.c_str());
@@ -65,7 +71,7 @@ void Program::LoadFrom(const std::string& vs, const std::string& fs)
 	if ( InfoLogLength > 0 ){
 		std::vector<char> VertexShaderErrorMessage(InfoLogLength+1);
 		glGetShaderInfoLog(vsId, InfoLogLength, NULL, &VertexShaderErrorMessage[0]);
-        std::cout << VertexShaderErrorMessage[0] << std::endl;
+        std::cout << VertexShaderErrorMessage.data() << std::endl;
 	}
 
     auto fsSrc = fs.c_str();
@@ -77,7 +83,7 @@ void Program::LoadFrom(const std::string& vs, const std::string& fs)
 	if ( InfoLogLength > 0 ){
 		std::vector<char> VertexShaderErrorMessage(InfoLogLength+1);
 		glGetShaderInfoLog(fsId, InfoLogLength, NULL, &VertexShaderErrorMessage[0]);
-        std::cout << VertexShaderErrorMessage[0] << std::endl;
+        std::cout << VertexShaderErrorMessage.data() << std::endl;
 	}
 
     mHandle = glCreateProgram();
