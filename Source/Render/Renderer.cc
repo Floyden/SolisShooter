@@ -24,7 +24,7 @@ Renderer::~Renderer() {
 
 void Renderer::Clear(float r, float g, float b, float a) 
 {
-    glClearColor(.0f, 0.5f, 1.f, 0.f);
+    glClearColor(r, g, b, a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
@@ -63,8 +63,11 @@ void Renderer::BindTexture(const HTexture& texture)
 
 void Renderer::BindProgram(const SPtr<Program>& program)
 {
-    mBoundProgram = program;
-    glUseProgram(mBoundProgram->GetHandle());
+    if(mBoundProgram != program)
+    {
+        mBoundProgram = program;
+        glUseProgram(mBoundProgram->GetHandle());
+    }
 }
 
 void Renderer::Draw(uint32_t vertexCount) 
@@ -75,22 +78,12 @@ void Renderer::Draw(uint32_t vertexCount)
         return;
     }
 
-    auto& attributes = mBoundAttributes->GetAttributes();
-    for (auto& attr: attributes)
-    {
-        glEnableVertexAttribArray(attr.location);
-        glBindBuffer(GL_ARRAY_BUFFER, mBoundBuffers[attr.location]->GetHandle());
-        glVertexAttribPointer(attr.location, attr.typeCount, attr.type, attr.normalized, attr.stride, (void*)0);
-    }
+    auto vao = sVaoManager->GetVao(mBoundProgram, mBoundAttributes, mBoundBuffers);
+    glBindVertexArray(vao);
 
 
-    glActiveTexture(GL_TEXTURE0);
     glDrawArrays(GL_TRIANGLES, 0, vertexCount);
 
-    for (auto& attr: attributes)
-    {
-        glDisableVertexAttribArray(attr.location);
-    }
 }
 
 void Renderer::DrawIndexed(uint32_t indexCount) 
@@ -105,6 +98,7 @@ void Renderer::DrawIndexed(uint32_t indexCount)
         std::cout << "IndexBuffer not bound\n";
         return;
     }
+    
     auto vao = sVaoManager->GetVao(mBoundProgram, mBoundAttributes, mBoundBuffers);
     glBindVertexArray(vao);
 /*
