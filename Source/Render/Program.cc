@@ -1,11 +1,10 @@
 #include "Program.hh"
 #include <GL/glew.h>
 #include <vector>
+#include <iostream>
 
 namespace Solis
 {
-    
-
 
 Program::~Program()
 {
@@ -37,6 +36,12 @@ void Program::SetUniformMat4f(const std::string& name, const Matrix4& value)
     glUniformMatrix4fv(loc, 1, false, glm::value_ptr(value));
 }
 
+void Program::SetUniform1i(const std::string& name, int value)
+{
+    auto loc = glGetUniformLocation(mHandle, name.c_str());
+    glUniform1i(loc, value);
+}
+
 void Program::SetUniform2i(const std::string& name, const Vec2i& value)
 {
     auto loc = glGetUniformLocation(mHandle, name.c_str());
@@ -60,7 +65,7 @@ void Program::LoadFrom(const std::string& vs, const std::string& fs)
 	if ( InfoLogLength > 0 ){
 		std::vector<char> VertexShaderErrorMessage(InfoLogLength+1);
 		glGetShaderInfoLog(vsId, InfoLogLength, NULL, &VertexShaderErrorMessage[0]);
-		printf("%s\n", &VertexShaderErrorMessage[0]);
+        std::cout << VertexShaderErrorMessage[0] << std::endl;
 	}
 
     auto fsSrc = fs.c_str();
@@ -72,7 +77,7 @@ void Program::LoadFrom(const std::string& vs, const std::string& fs)
 	if ( InfoLogLength > 0 ){
 		std::vector<char> VertexShaderErrorMessage(InfoLogLength+1);
 		glGetShaderInfoLog(fsId, InfoLogLength, NULL, &VertexShaderErrorMessage[0]);
-		printf("%s\n", &VertexShaderErrorMessage[0]);
+        std::cout << VertexShaderErrorMessage[0] << std::endl;
 	}
 
     mHandle = glCreateProgram();

@@ -18,6 +18,7 @@ public:
 
     void SetUniformMat4f(const String& name, const Matrix4& value);
 
+    void SetUniform1i(const String& name, int value);
     void SetUniform2i(const String& name, const Vec2i& value);
     uint32_t GetHandle() const { return mHandle; }
 
