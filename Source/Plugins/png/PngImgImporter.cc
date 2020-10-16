@@ -44,6 +44,8 @@ SPtr<Image> PngImgImporter::Import(const String& path)
 
 	png_set_read_fn(pngPtr, &file, ReadCallback);
 	png_read_info(pngPtr, pngInfo);
+	// TODO;
+	return nullptr;
 }
 
 } // namespace Solis
