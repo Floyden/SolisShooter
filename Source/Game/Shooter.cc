@@ -60,18 +60,22 @@ void Shooter::Init()
     quadData2->WriteData(0, gQuadData2.size() * sizeof(float), gQuadData2.data());
     auto quadUV = VertexBuffer::Create({static_cast<uint32_t>(gQuadUV.size()), sizeof(float)});
     quadUV->WriteData(0, gQuadUV.size() * sizeof(float), gQuadUV.data());
+    auto quadNormal = VertexBuffer::Create({static_cast<uint32_t>(gQuadNormal.size()), sizeof(float)});
+    quadNormal->WriteData(0, gQuadNormal.size() * sizeof(float), gQuadNormal.data());
 
     for (size_t i = 0; i < 2; i++)
     {
         mMeshes.emplace_back(std::make_shared<Mesh>());
         mMeshes[i]->mAttributes = VertexAttributes::Create({
             VertexAttribute{0, 3, GL_FLOAT, GL_FALSE, 0},
-            VertexAttribute{1, 2, GL_FLOAT, GL_FALSE, 0}});
+            VertexAttribute{1, 2, GL_FLOAT, GL_FALSE, 0},
+            VertexAttribute{2, 3, GL_FLOAT, GL_FALSE, 0}});
 
         mMeshes[i]->mVertexData = std::make_shared<VertexData>();
         mMeshes[i]->mVertexData->SetBuffer(0, quadData);
 
         mMeshes[i]->mVertexData->SetBuffer(1, quadUV);
+        mMeshes[i]->mVertexData->SetBuffer(2, quadNormal);
 
         mMeshes[i]->mIndexBuffer = IndexBuffer::Create({static_cast<uint32_t>(gQuadDataIdx.size())});
         mMeshes[i]->mIndexBuffer->WriteData(0, gQuadDataIdx.size() * sizeof(uint32_t), gQuadDataIdx.data());
@@ -99,26 +103,48 @@ void Shooter::Init()
 
     LoadScene();
 
+    // TODO: MOVE THIS
     glGenFramebuffers(1, &mFrameBuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, mFrameBuffer);
 
     glGenTextures(1, &mRenderTexture);
     glBindTexture(GL_TEXTURE_2D, mRenderTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, mWindow->GetWidth(), mWindow->GetHeight(), 0,GL_RGB, GL_UNSIGNED_BYTE, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, mWindow->GetWidth(), mWindow->GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
+    glGenTextures(1, &mNormalTexture);
+    glBindTexture(GL_TEXTURE_2D, mNormalTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB10_A2, mWindow->GetWidth(), mWindow->GetHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+/*
     glGenRenderbuffers(1, &mDepthBuffer);
     glBindRenderbuffer(GL_RENDERBUFFER, mDepthBuffer);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, mWindow->GetWidth(), mWindow->GetHeight());
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mDepthBuffer);
+*/
+
+    glGenTextures(1, &mDepthTexture);
+    glBindTexture(GL_TEXTURE_2D, mDepthTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, mWindow->GetWidth(), mWindow->GetHeight(), 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 0);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, mRenderTexture, 0);
-    GLenum drawBuffers[1] = {GL_COLOR_ATTACHMENT0};
-    glDrawBuffers(1, drawBuffers);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, mNormalTexture, 0);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, mDepthTexture, 0);
+    GLenum drawBuffers[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+    glDrawBuffers(2, drawBuffers);
 
     if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         std::cout << "Error code: " << glGetError() << std::endl;
@@ -129,7 +155,6 @@ void Shooter::Init()
 
     mRenderTarget->mVertexData = std::make_shared<VertexData>();
     mRenderTarget->mVertexData->SetBuffer(0, quadData2);
-    mRenderTarget->mIndexBuffer = IndexBuffer::Create({static_cast<uint32_t>(gQuadDataIdx.size())});
 }
 
 void Shooter::LoadScene()
@@ -139,7 +164,7 @@ void Shooter::LoadScene()
 void Shooter::OnMouseMove(InputMouseMovementEvent* event)
 {
     // Looking around
-    static float MOUSE_SENS = 0.005f;
+    static float MOUSE_SENS = 0.008f;
     auto quatY = glm::normalize(glm::angleAxis(MOUSE_SENS * event->GetRelative().y, Vec3{1, 0, 0}));
     auto quatX = glm::normalize(glm::angleAxis(-MOUSE_SENS * event->GetRelative().x, Vec3{0, 1, 0}));
     auto res = glm::normalize(mCamera->GetRotation() * quatY * quatX);
@@ -225,6 +250,7 @@ void Shooter::Render()
     glViewport(0,0,mWindow->GetWidth(), mWindow->GetHeight());
 
     mRender->Clear(0.f, 0.5f, 1.f, 1.0f);
+    glEnable(GL_DEPTH_TEST);
 
     mRender->BindProgram(mMaterial->GetProgram());
     glActiveTexture(GL_TEXTURE0);
@@ -246,8 +272,6 @@ void Shooter::Render()
         
 
         static double counter = 0;
-       // mProgram->SetUniform3f("uPos", Vec3( cos(counter), 0.0f, 2.0f * (sin(counter) + 1.0f) ));
-        mProgram->SetUniform3f("uPos", Vec3( 1.0, 0.0f, 1.0f) );
         mProgram->SetUniform1i("uSampler", 0);
         if(counter <= 0) 
             counter -= mDelta.count() * 1.0f;
@@ -260,19 +284,38 @@ void Shooter::Render()
         mRender->DrawIndexed(mesh->mIndexBuffer->GetIndexCount());
     }
 
+    // Begin deferred stage
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0,0,mWindow->GetWidth(), mWindow->GetHeight());
     mRender->Clear(0.0f, 0.0f, 0.0f, 1.0f);
 
     mRender->BindProgram(mDeferred);
+    glDisable(GL_DEPTH_TEST);
+
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, mRenderTexture);
-    mDeferred->SetUniform1i("uFrame", 0);
+    mDeferred->SetUniform1i("uAlbedo", 0);
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, mNormalTexture);
+    mDeferred->SetUniform1i("uNormal", 1);
+
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, mDepthTexture);
+    mDeferred->SetUniform1i("uDepth", 2);
+
+    mDeferred->SetUniformMat4f("uInvView", mCamera->GetInvView());
+    mDeferred->SetUniformMat4f("uInvProj", mCamera->GetInvProjection());
+    
+
+    mDeferred->SetUniform3f("uLightPos", Vec3(0.1, 2.5, 5.5));
+    mDeferred->SetUniform4f("uLightColor", Vec4(1.0, 0.2, 0.4, 1.0));
+    mDeferred->SetUniform1f("uLightBrightness", 100.0f);
+    mDeferred->SetUniform1f("uLightRadius", 20.5f);
 
     mRender->BindVertexAttributes(mRenderTarget->mAttributes);
     auto buffer = mRenderTarget->mVertexData->GetBuffer(0);
     mRender->BindVertexBuffers(0, &buffer, 1);
-    mRender->BindIndexBuffer(mRenderTarget->mIndexBuffer);
     mRender->Draw(6);
 
     mWindow->SwapWindow(); 

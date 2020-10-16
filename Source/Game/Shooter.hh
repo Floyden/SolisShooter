@@ -60,7 +60,8 @@ private:
 
     uint32_t mFrameBuffer;
     uint32_t mRenderTexture;
-    uint32_t mDepthBuffer;
+    uint32_t mNormalTexture;
+    uint32_t mDepthTexture;
 };
 
 } // namespace Solis
