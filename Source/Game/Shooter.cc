@@ -56,6 +56,8 @@ void Shooter::Init()
     mRender = std::make_shared<Renderer>();
     auto quadData = VertexBuffer::Create({static_cast<uint32_t>(gQuadData.size()), sizeof(float)});
     quadData->WriteData(0, gQuadData.size() * sizeof(float), gQuadData.data());
+    auto quadData2 = VertexBuffer::Create({static_cast<uint32_t>(gQuadData2.size()), sizeof(float)});
+    quadData2->WriteData(0, gQuadData2.size() * sizeof(float), gQuadData2.data());
     auto quadUV = VertexBuffer::Create({static_cast<uint32_t>(gQuadUV.size()), sizeof(float)});
     quadUV->WriteData(0, gQuadUV.size() * sizeof(float), gQuadUV.data());
 
@@ -78,6 +80,9 @@ void Shooter::Init()
     mProgram = Program::Create();
     mProgram->LoadFrom(gVertexShaderSource, gFragmentShaderSource);
 
+    mDeferred = Program::Create();
+    mDeferred->LoadFrom(gPassthroughShaderSource, gImageShaderSource);
+
     auto img = mImageImporter->Import("Resources/Floor/bricks.png");
     mTexture = Texture::Create(img);
 
@@ -93,6 +98,38 @@ void Shooter::Init()
     mRenderable->SetMaterial(mMaterial);
 
     LoadScene();
+
+    glGenFramebuffers(1, &mFrameBuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, mFrameBuffer);
+
+    glGenTextures(1, &mRenderTexture);
+    glBindTexture(GL_TEXTURE_2D, mRenderTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, mWindow->GetWidth(), mWindow->GetHeight(), 0,GL_RGB, GL_UNSIGNED_BYTE, 0);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    glGenRenderbuffers(1, &mDepthBuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, mDepthBuffer);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, mWindow->GetWidth(), mWindow->GetHeight());
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mDepthBuffer);
+
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, mRenderTexture, 0);
+    GLenum drawBuffers[1] = {GL_COLOR_ATTACHMENT0};
+    glDrawBuffers(1, drawBuffers);
+
+    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "Error code: " << glGetError() << std::endl;
+
+    mRenderTarget = std::make_shared<Mesh>();
+    mRenderTarget->mAttributes = VertexAttributes::Create({
+        VertexAttribute{0, 3, GL_FLOAT, GL_FALSE, 0}});
+
+    mRenderTarget->mVertexData = std::make_shared<VertexData>();
+    mRenderTarget->mVertexData->SetBuffer(0, quadData2);
+    mRenderTarget->mIndexBuffer = IndexBuffer::Create({static_cast<uint32_t>(gQuadDataIdx.size())});
 }
 
 void Shooter::LoadScene()
@@ -184,9 +221,13 @@ void Shooter::UpdateInput(float delta)
 
 void Shooter::Render()
 {
+    glBindFramebuffer(GL_FRAMEBUFFER, mFrameBuffer);
+    glViewport(0,0,mWindow->GetWidth(), mWindow->GetHeight());
+
     mRender->Clear(0.f, 0.5f, 1.f, 1.0f);
 
     mRender->BindProgram(mMaterial->GetProgram());
+    glActiveTexture(GL_TEXTURE0);
     mRender->BindTexture(mMaterial->GetTexture());
 
     auto mvp = mCamera->GetProjection() * mCamera->GetView();
@@ -207,6 +248,7 @@ void Shooter::Render()
         static double counter = 0;
        // mProgram->SetUniform3f("uPos", Vec3( cos(counter), 0.0f, 2.0f * (sin(counter) + 1.0f) ));
         mProgram->SetUniform3f("uPos", Vec3( 1.0, 0.0f, 1.0f) );
+        mProgram->SetUniform1i("uSampler", 0);
         if(counter <= 0) 
             counter -= mDelta.count() * 1.0f;
         else 
@@ -218,9 +260,22 @@ void Shooter::Render()
         mRender->DrawIndexed(mesh->mIndexBuffer->GetIndexCount());
     }
 
-    
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0,0,mWindow->GetWidth(), mWindow->GetHeight());
+    mRender->Clear(0.0f, 0.0f, 0.0f, 1.0f);
 
-    mWindow->SwapWindow();
+    mRender->BindProgram(mDeferred);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, mRenderTexture);
+    mDeferred->SetUniform1i("uFrame", 0);
+
+    mRender->BindVertexAttributes(mRenderTarget->mAttributes);
+    auto buffer = mRenderTarget->mVertexData->GetBuffer(0);
+    mRender->BindVertexBuffers(0, &buffer, 1);
+    mRender->BindIndexBuffer(mRenderTarget->mIndexBuffer);
+    mRender->Draw(6);
+
+    mWindow->SwapWindow(); 
 }
 
 void Shooter::RunMainLoop()

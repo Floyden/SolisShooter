@@ -44,6 +44,9 @@ private:
     SPtr<Renderer> mRender;
     
     SPtr<Program> mProgram;
+    SPtr<Program> mDeferred;
+    SPtr<Mesh> mRenderTarget;
+    
     HTexture mTexture;
     Vector<SPtr<Mesh>> mMeshes;
     SPtr<Renderable> mRenderable;
@@ -54,6 +57,10 @@ private:
 
     UPtr<AssimpImporter> mImporter;
     UPtr<SDL2ImgImporter> mImageImporter;
+
+    uint32_t mFrameBuffer;
+    uint32_t mRenderTexture;
+    uint32_t mDepthBuffer;
 };
 
 } // namespace Solis
