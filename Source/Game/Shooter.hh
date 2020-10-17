@@ -7,6 +7,7 @@
 #include "Render/Mesh.hh"
 #include "Render/Renderable.hh"
 #include "Render/Framebuffer.hh"
+#include "Render/RenderTexture.hh"
 #include "Event.hh"
 #include "Math.hh"
 #include "Input/InputEvent.hh"
@@ -59,10 +60,7 @@ private:
     UPtr<AssimpImporter> mImporter;
     UPtr<SDL2ImgImporter> mImageImporter;
 
-    uint32_t mFrameBuffer;
-    uint32_t mRenderTexture;
-    uint32_t mNormalTexture;
-    uint32_t mDepthTexture;
+    SPtr<RenderTexture> mRenderTextures[4];
     SPtr<Framebuffer> mFrame;
 };
 

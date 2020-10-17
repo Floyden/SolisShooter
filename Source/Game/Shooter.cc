@@ -105,52 +105,11 @@ void Shooter::Init()
 
     // TODO: MOVE THIS
 
-
-    glGenTextures(1, &mRenderTexture);
-    glBindTexture(GL_TEXTURE_2D, mRenderTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, mWindow->GetWidth(), mWindow->GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-    glGenTextures(1, &mNormalTexture);
-    glBindTexture(GL_TEXTURE_2D, mNormalTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB10_A2, mWindow->GetWidth(), mWindow->GetHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-/*
-    glGenRenderbuffers(1, &mDepthBuffer);
-    glBindRenderbuffer(GL_RENDERBUFFER, mDepthBuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, mWindow->GetWidth(), mWindow->GetHeight());
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mDepthBuffer);
-*/
-
-    glGenTextures(1, &mDepthTexture);
-    glBindTexture(GL_TEXTURE_2D, mDepthTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, mWindow->GetWidth(), mWindow->GetHeight(), 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 0);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-/*
-    glGenFramebuffers(1, &mFrameBuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, mFrameBuffer);
-
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, mRenderTexture, 0);
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, mNormalTexture, 0);
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, mDepthTexture, 0);
-    GLenum drawBuffers[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-    glDrawBuffers(2, drawBuffers);
-
-    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "Error code: " << glGetError() << std::endl;
-*/
+    mRenderTextures[0] = std::make_shared<RenderTexture>(mWindow->GetWidth(), mWindow->GetHeight(), RenderTextureFormat::RGB8);
+    mRenderTextures[1] = std::make_shared<RenderTexture>(mWindow->GetWidth(), mWindow->GetHeight(), RenderTextureFormat::RGB10A2);
+    mRenderTextures[2] = std::make_shared<RenderTexture>(mWindow->GetWidth(), mWindow->GetHeight(), RenderTextureFormat::RGBA8);
+    mRenderTextures[3] = std::make_shared<RenderTexture>(mWindow->GetWidth(), mWindow->GetHeight(), RenderTextureFormat::D32);
+    
     mRenderTarget = std::make_shared<Mesh>();
     mRenderTarget->mAttributes = VertexAttributes::Create({
         VertexAttribute{0, 3, GL_FLOAT, GL_FALSE, 0}});
@@ -159,9 +118,10 @@ void Shooter::Init()
     mRenderTarget->mVertexData->SetBuffer(0, quadData2);
 
     mFrame = std::make_shared<Framebuffer>();
-    mFrame->BindTexture(0, mRenderTexture);
-    mFrame->BindTexture(1, mNormalTexture);
-    mFrame->BindDepthbuffer(mDepthTexture);
+    mFrame->BindTexture(0, mRenderTextures[0]);
+    mFrame->BindTexture(1, mRenderTextures[1]);
+    mFrame->BindTexture(2, mRenderTextures[2]);
+    mFrame->BindDepthbuffer(mRenderTextures[3]);
     mFrame->Build();
 }
 
@@ -255,7 +215,6 @@ void Shooter::UpdateInput(float delta)
 void Shooter::Render()
 {
     mFrame->Bind();
-    //glBindFramebuffer(GL_FRAMEBUFFER, mFrameBuffer);
     glViewport(0,0,mWindow->GetWidth(), mWindow->GetHeight());
 
     mRender->Clear(0.f, 0.5f, 1.f, 1.0f);
@@ -302,15 +261,15 @@ void Shooter::Render()
     glDisable(GL_DEPTH_TEST);
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, mRenderTexture);
+    glBindTexture(GL_TEXTURE_2D, mRenderTextures[0]->GetHandle());
     mDeferred->SetUniform1i("uAlbedo", 0);
 
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, mNormalTexture);
+    glBindTexture(GL_TEXTURE_2D, mRenderTextures[1]->GetHandle());
     mDeferred->SetUniform1i("uNormal", 1);
 
     glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, mDepthTexture);
+    glBindTexture(GL_TEXTURE_2D, mRenderTextures[3]->GetHandle());
     mDeferred->SetUniform1i("uDepth", 2);
 
     mDeferred->SetUniformMat4f("uInvView", mCamera->GetInvView());
