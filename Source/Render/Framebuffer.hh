@@ -1,5 +1,6 @@
 #pragma once
 #include "Defines.hh"
+#include "RenderTexture.hh"
 
 namespace Solis
 {
@@ -16,9 +17,11 @@ public:
     void Build();
 
     void BindTexture(uint32_t attachment, uint32_t texture);
+    void BindTexture(uint32_t attachment, SPtr<RenderTexture> texture);
     void UnbindTexture(uint32_t attachment);
 
     void BindDepthbuffer(uint32_t buffer);
+    void BindDepthbuffer(SPtr<RenderTexture> texture);
     void UnbindDepthbuffer(uint32_t buffer);
 
 private:

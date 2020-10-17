@@ -63,6 +63,11 @@ void Framebuffer::BindTexture(uint32_t attachment, uint32_t texture)
     mBoundTextures[attachment] = texture;
 }
 
+void Framebuffer::BindTexture(uint32_t attachment, SPtr<RenderTexture> texture)
+{
+    BindTexture(attachment, texture->GetHandle());
+}
+
 void Framebuffer::UnbindTexture(uint32_t attachment)
 {
     if  (attachment >= MAX_COLOR_ATTACHMENTS) {
@@ -76,6 +81,11 @@ void Framebuffer::UnbindTexture(uint32_t attachment)
 void Framebuffer::BindDepthbuffer(uint32_t buffer)
 {
     mDepthbuffer = buffer;
+}
+
+void Framebuffer::BindDepthbuffer(SPtr<RenderTexture> texture)
+{
+    BindDepthbuffer(texture->GetHandle());
 }
 
 void Framebuffer::UnbindDepthbuffer(uint32_t buffer)
