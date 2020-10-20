@@ -64,15 +64,15 @@ public:
 
     /// Initialize all modules in the order they were added
     void Init() {
-        for (auto it = mOrder.front(); it != mOrder.end(); it++)
-            it->Init();
+        for (auto it = mOrder.begin(); it != mOrder.end(); it++)
+            (*it)->Init();
         
     }
 
     /// Shutdown all modules in the reverse order they were added
     void Shutdown() {
         for (auto rit = mOrder.rbegin(); rit != mOrder.rend(); rit++)
-            rit->Shutdown();
+            (*rit)->Shutdown();
     }
 
     /// Static function to get a module.
