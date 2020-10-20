@@ -30,6 +30,7 @@ public:
         auto module = std::make_unique<T>();
         auto ptr = module.get();
         mModules.emplace(std::move(module));
+        mUninitModules.emplace(ptr);
         return ptr;
     }
 
@@ -61,10 +62,13 @@ public:
         return nullptr;
     }
 
-    /// Initialize all modules and the ModuleManager
+    /// Initialize all modules in the order they were added
     void Init() {
-        for(auto& module: mModules)
-            module->Init();
+        while(!mUninitModules.empty())
+        {
+            mUninitModules.front()->Init();
+            mUninitModules.pop();
+        }
     }
 
     /// Shutdown all modules and the ModuleManager
@@ -86,4 +90,5 @@ public:
 
 private:
     UnorderedSet<UPtr<IModule>> mModules;
+    Queue<IModule*> mUninitModules;
 };
