@@ -30,7 +30,7 @@ public:
         auto module = std::make_unique<T>();
         auto ptr = module.get();
         mModules.emplace(std::move(module));
-        mOrder.emplace(ptr);
+        mOrder.push_back(ptr);
         return ptr;
     }
 
