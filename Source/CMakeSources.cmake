@@ -17,6 +17,7 @@ set(SOLIS_SOURCE
     "Source/Render/Texture.cc"
     "Source/Render/Renderer.cc"
     "Source/Render/RenderTexture.cc"
+    "Source/Physics/Physics.cc"
     "Source/Plugins/assimp/AssimpImporter.cc"
     "Source/Plugins/SDL2_image/SDL2ImgImporter.cc"
     "Source/Plugins/png/PngImgImporter.cc"

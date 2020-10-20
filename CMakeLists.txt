@@ -15,23 +15,28 @@ find_package(assimp REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(glm REQUIRED)
-find_package(libpng REQUIRED)
+find_package(Bullet REQUIRED)
+find_package(PNG REQUIRED)
 
 include_directories("Source")
 include_directories(${SDL2_INCLUDE_DIRS})
+include_directories(${BULLET_INCLUDE_DIR})
 
 add_executable(SolisShooter ${SOLIS_SOURCE})
 
-set_target_properties(${PROJECT_NAME} PROPERTIES
-LINK_FLAGS /SUBSYSTEM:WINDOWS
-)
+#set_target_properties(${PROJECT_NAME} PROPERTIES
+#LINK_FLAGS /SUBSYSTEM:WINDOWS
+#)
 
 target_link_libraries(${PROJECT_NAME} SDL2)
 target_link_libraries(${PROJECT_NAME} SDL2_image)
 target_link_libraries(${PROJECT_NAME} assimp)
-target_link_libraries(${PROJECT_NAME} OpenGL32)
-target_link_libraries(${PROJECT_NAME} GLEW32)
-target_link_libraries(${PROJECT_NAME} libpng16)
+target_link_libraries(${PROJECT_NAME} OpenGL)
+target_link_libraries(${PROJECT_NAME} GLEW)
+target_link_libraries(${PROJECT_NAME} BulletDynamics)
+target_link_libraries(${PROJECT_NAME} BulletCollision)
+target_link_libraries(${PROJECT_NAME} LinearMath)
+target_link_libraries(${PROJECT_NAME} png)
 
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})

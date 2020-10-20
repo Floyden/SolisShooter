@@ -3,6 +3,9 @@
 
 using namespace Solis::Math;
 
+namespace Solis
+{
+    
 class ICollider {
 public:
     virtual Vector3 GetPosition() const = 0;
@@ -16,3 +19,6 @@ public:
 protected:
 
 };
+    
+} // namespace Solis
+

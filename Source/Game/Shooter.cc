@@ -4,6 +4,7 @@
 #include "RandomThings.hh"
 #include "Image.hh"
 #include "Input/Input.hh"
+#include "Physics/Physics.hh"
 
 namespace Solis
 {
@@ -36,7 +37,10 @@ void Shooter::Init()
     mModules->AddModule<ComponentManager>();
     auto events = mModules->AddModule<Events>();
     mModules->AddModule<Input>();
+    mModules->AddModule<Physics>();
     mModules->Init();
+
+    mModules->GetModule<Physics>()->Test();
     
     events->Subscribe(this, &Shooter::OnKeyEvent);
     events->Subscribe(this, &Shooter::OnMouseMove);
