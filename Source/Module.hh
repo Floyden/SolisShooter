@@ -30,7 +30,7 @@ public:
         auto module = std::make_unique<T>();
         auto ptr = module.get();
         mModules.emplace(std::move(module));
-        mUninitModules.emplace(ptr);
+        mOrder.emplace(ptr);
         return ptr;
     }
 
@@ -64,17 +64,15 @@ public:
 
     /// Initialize all modules in the order they were added
     void Init() {
-        while(!mUninitModules.empty())
-        {
-            mUninitModules.front()->Init();
-            mUninitModules.pop();
-        }
+        for (auto it = mOrder.front(); it != mOrder.end(); it++)
+            it->Init();
+        
     }
 
-    /// Shutdown all modules and the ModuleManager
+    /// Shutdown all modules in the reverse order they were added
     void Shutdown() {
-        for(auto& module: mModules)
-            module->Shutdown();
+        for (auto rit = mOrder.rbegin(); rit != mOrder.rend(); rit++)
+            rit->Shutdown();
     }
 
     /// Static function to get a module.
@@ -90,5 +88,5 @@ public:
 
 private:
     UnorderedSet<UPtr<IModule>> mModules;
-    Queue<IModule*> mUninitModules;
+    Deque<IModule*> mOrder;
 };
