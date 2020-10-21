@@ -8,6 +8,7 @@
 #include "Render/Renderable.hh"
 #include "Render/Framebuffer.hh"
 #include "Render/RenderTexture.hh"
+#include "Physics/Physics.hh"
 #include "Event.hh"
 #include "Math.hh"
 #include "Input/InputEvent.hh"
@@ -62,6 +63,9 @@ private:
 
     SPtr<RenderTexture> mRenderTextures[4];
     SPtr<Framebuffer> mFrame;
+
+    UPtr<btBoxShape> mShape;
+    UPtr<btRigidBody> mBody;
 };
 
 } // namespace Solis

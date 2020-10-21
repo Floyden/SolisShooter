@@ -4,7 +4,6 @@
 #include "RandomThings.hh"
 #include "Image.hh"
 #include "Input/Input.hh"
-#include "Physics/Physics.hh"
 
 namespace Solis
 {
@@ -37,10 +36,8 @@ void Shooter::Init()
     mModules->AddModule<ComponentManager>();
     auto events = mModules->AddModule<Events>();
     mModules->AddModule<Input>();
-    mModules->AddModule<Physics>();
+    auto physics = mModules->AddModule<Physics>();
     mModules->Init();
-
-    mModules->GetModule<Physics>()->Test();
     
     events->Subscribe(this, &Shooter::OnKeyEvent);
     events->Subscribe(this, &Shooter::OnMouseMove);
@@ -67,7 +64,7 @@ void Shooter::Init()
     auto quadNormal = VertexBuffer::Create({static_cast<uint32_t>(gQuadNormal.size()), sizeof(float)});
     quadNormal->WriteData(0, gQuadNormal.size() * sizeof(float), gQuadNormal.data());
 
-    for (size_t i = 0; i < 2; i++)
+    for (size_t i = 0; i < 1; i++)
     {
         mMeshes.emplace_back(std::make_shared<Mesh>());
         mMeshes[i]->mAttributes = VertexAttributes::Create({
@@ -127,6 +124,12 @@ void Shooter::Init()
     mFrame->BindTexture(2, mRenderTextures[2]);
     mFrame->BindDepthbuffer(mRenderTextures[3]);
     mFrame->Build();
+
+    // Load Physics stuff
+    mShape = std::make_unique<btBoxShape>(btVector3(0.5f, 0.5f, 0.5f));
+    mBody = std::make_unique<btRigidBody>(0.0f, nullptr, nullptr);
+    mBody->setCollisionShape(mShape.get());
+    physics->GetDynamicsWorld()->addRigidBody(mBody.get());
 }
 
 void Shooter::LoadScene()
@@ -144,6 +147,22 @@ void Shooter::OnMouseMove(InputMouseMovementEvent* event)
 }
 void Shooter::OnMouseButton(InputMouseButtonEvent* event)
 {
+    if(event->GetButton() != SDL_BUTTON_LEFT || !event->GetPressed())
+        return;
+    
+    Vec2i viewport(mWindow->GetWidth(), mWindow->GetHeight());
+    auto from = mCamera->ProjectRayOrigin(event->GetPosition(), viewport);
+    
+    btVector3 btFrom(from.x, from.y, from.z);
+    btVector3 btTo(0.0f, 0.0f, 1.0f);
+    btCollisionWorld::ClosestRayResultCallback result(btFrom, btTo);
+
+    mModules->GetModule<Physics>()->GetDynamicsWorld()->rayTest(btFrom, btTo, result);
+
+    if(result.hasHit())
+    {
+        std::cout << "Nice" << std::endl;
+    }
 }
 
 void Shooter::OnWindowEvent(WindowEvent* event)
