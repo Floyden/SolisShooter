@@ -5,6 +5,7 @@
 #include <array>
 #include <deque>
 #include <queue>
+#include <map>
 
 #include <unordered_set>
 #include <unordered_map>
@@ -20,6 +21,9 @@ using Deque = std::deque<T, A>;
 
 template<class T, class C = Deque<T>>
 using Queue = std::queue<T, C>;
+
+template<class K, class V, class C = std::less<K>, class A = std::allocator<std::pair<const K, V>>>
+using Map = std::map<K, V, C, A>;
 
 template<class T>
 using SPtr = std::shared_ptr<T>;
