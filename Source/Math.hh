@@ -2,6 +2,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/quaternion.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace Solis
@@ -23,9 +25,9 @@ using Quaternion = glm::quat;
     
 struct Transform
 {
-    Vec3 position;
-    Quaternion rotation;
-    Vec3 scale;
+    Vec3 position = Vec3(0.0f);
+    Quaternion rotation = Quaternion(1.0f, 0.0f, 0.0f, 0.0f) ;
+    Vec3 scale = Vec3(1.0f);
 
     void SetPosition(const Vec3& _position) { position = _position; }
     void SetRoatation(const Quaternion& _rotation) { rotation = _rotation; }
@@ -43,6 +45,16 @@ struct Transform
 
     Vec3& GetScale() { return scale; }
     const Vec3& GetScale() const { return scale; }
+
+    Matrix4 GetTransform() const
+    {
+        Matrix4 transform(1.0f);
+        glm::translate(transform, position);
+        transform = transform * glm::toMat4(rotation);
+        glm::scale(transform, scale);
+
+        return transform;
+    }
 };
 
 };
