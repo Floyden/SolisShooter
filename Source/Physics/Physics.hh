@@ -1,8 +1,11 @@
 #pragma once
 #include "../Module.hh"
+//#include "RigidBody.hh"
 #include <bullet/btBulletDynamicsCommon.h>
 
-class PhysicsScene;
+
+namespace Solis
+{
 
 class Physics : public IModule {
 public:
@@ -12,9 +15,11 @@ public:
     virtual void Shutdown() override {};
     virtual void Update() override {};
 
-    //SPtr<RigidBody> CreateBoxCollider();
+    //SPtr<RigidBody> CreateRigidBody();
 
     void Test();
+
+    btDiscreteDynamicsWorld* GetDynamicsWorld() { return mDynamicsWorld.get(); }
 private:
     UPtr<btCollisionConfiguration> mCollisionConfig;
     UPtr<btCollisionDispatcher> mDispatcher;
@@ -23,4 +28,7 @@ private:
 
     UPtr<btDiscreteDynamicsWorld> mDynamicsWorld;
 };
+
+} // namespace Solis
+
 
