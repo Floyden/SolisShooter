@@ -55,6 +55,20 @@ void Shooter::Init()
 
     // Init Render Stuff
     mRender = std::make_shared<Renderer>();
+
+    mProgram = Program::Create();
+    mProgram->LoadFrom(gVertexShaderSource, gFragmentShaderSource);
+
+    mDeferred = Program::Create();
+    mDeferred->LoadFrom(gPassthroughShaderSource, gImageShaderSource);
+
+    auto img = mImageImporter->Import("Resources/Floor/bricks.png");
+    mTexture = Texture::Create(img);
+
+    mMaterial = std::make_shared<DefaultMaterial>();
+    mMaterial->SetTexture(mTexture);
+    mMaterial->SetProgram(mProgram);
+    
     auto quadData = VertexBuffer::Create({static_cast<uint32_t>(gQuadData.size()), sizeof(float)});
     quadData->WriteData(0, gQuadData.size() * sizeof(float), gQuadData.data());
     auto quadData2 = VertexBuffer::Create({static_cast<uint32_t>(gQuadData2.size()), sizeof(float)});
@@ -66,41 +80,45 @@ void Shooter::Init()
 
     for (size_t i = 0; i < 1; i++)
     {
-        mMeshes.emplace_back(std::make_shared<Mesh>());
-        mMeshes[i]->mAttributes = VertexAttributes::Create({
+        auto mesh = std::make_shared<Mesh>();
+        //mMeshes.emplace_back(std::make_shared<Mesh>());
+        mesh->mAttributes = VertexAttributes::Create({
             VertexAttribute{0, 3, GL_FLOAT, GL_FALSE, 0},
             VertexAttribute{1, 2, GL_FLOAT, GL_FALSE, 0},
             VertexAttribute{2, 3, GL_FLOAT, GL_FALSE, 0}});
 
-        mMeshes[i]->mVertexData = std::make_shared<VertexData>();
-        mMeshes[i]->mVertexData->SetBuffer(0, quadData);
+        mesh->mVertexData = std::make_shared<VertexData>();
+        mesh->mVertexData->SetBuffer(0, quadData);
 
-        mMeshes[i]->mVertexData->SetBuffer(1, quadUV);
-        mMeshes[i]->mVertexData->SetBuffer(2, quadNormal);
+        mesh->mVertexData->SetBuffer(1, quadUV);
+        mesh->mVertexData->SetBuffer(2, quadNormal);
 
-        mMeshes[i]->mIndexBuffer = IndexBuffer::Create({static_cast<uint32_t>(gQuadDataIdx.size())});
-        mMeshes[i]->mIndexBuffer->WriteData(0, gQuadDataIdx.size() * sizeof(uint32_t), gQuadDataIdx.data());
+        mesh->mIndexBuffer = IndexBuffer::Create({static_cast<uint32_t>(gQuadDataIdx.size())});
+        mesh->mIndexBuffer->WriteData(0, gQuadDataIdx.size() * sizeof(uint32_t), gQuadDataIdx.data());
+
+        auto renderable = std::make_shared<Renderable>();
+
+        renderable->SetMaterial(mMaterial);
+        renderable->SetMesh(mesh);
+        Transform trans;
+        trans.SetPosition(Vec3(0.0f, 0.0f, 1.0f));
+        trans.SetScale(Vec3(0.1f));
+        mRenderables[renderable] = trans;
     }
 
-    mProgram = Program::Create();
-    mProgram->LoadFrom(gVertexShaderSource, gFragmentShaderSource);
-
-    mDeferred = Program::Create();
-    mDeferred->LoadFrom(gPassthroughShaderSource, gImageShaderSource);
-
-    auto img = mImageImporter->Import("Resources/Floor/bricks.png");
-    mTexture = Texture::Create(img);
 
 
     auto mesh = mImporter->ImportMesh("Resources/Floor/Floor.gltf");
-    mMeshes.push_back(mesh);
-    mMaterial = std::make_shared<DefaultMaterial>();
-    mMaterial->SetTexture(mTexture);
-    mMaterial->SetProgram(mProgram);
+    auto renderableFloor = std::make_shared<Renderable>();
+    renderableFloor->SetMaterial(mMaterial);
+    renderableFloor->SetMesh(mesh);
 
-    mRenderable = std::make_shared<Renderable>();
-    mRenderable->SetMesh(mesh);
-    mRenderable->SetMaterial(mMaterial);
+    mRenderables[renderableFloor] = Transform();
+    //mMeshes.push_back(mesh);
+
+    //mRenderable = std::make_shared<Renderable>();
+    //mRenderable->SetMesh(mesh);
+    //mRenderable->SetMaterial(mMaterial);
 
     LoadScene();
 
@@ -247,10 +265,13 @@ void Shooter::Render()
     glActiveTexture(GL_TEXTURE0);
     mRender->BindTexture(mMaterial->GetTexture());
 
-    auto mvp = mCamera->GetProjection() * mCamera->GetView();
+    auto vp = mCamera->GetProjection() * mCamera->GetView();
 
-    for (auto& mesh: mMeshes)
+    for(auto& p : mRenderables)
     {
+        auto& renderable = p.first;
+        auto mesh = renderable->GetMesh();
+
         mRender->BindVertexAttributes(mesh->mAttributes);
         for (auto& attr: mesh->mAttributes->GetAttributes())
         {
@@ -271,7 +292,7 @@ void Shooter::Render()
 
         counter *= -1.0f;
 
-        mProgram->SetUniformMat4f("uMVP", mvp);
+        mProgram->SetUniformMat4f("uMVP", vp * p.second.GetTransform());
         mRender->DrawIndexed(mesh->mIndexBuffer->GetIndexCount());
     }
 
@@ -281,7 +302,7 @@ void Shooter::Render()
     mRender->Clear(0.0f, 0.0f, 0.0f, 1.0f);
 
     mRender->BindProgram(mDeferred);
-    glDisable(GL_DEPTH_TEST);
+    //glDisable(GL_DEPTH_TEST);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, mRenderTextures[0]->GetHandle());

@@ -51,8 +51,7 @@ private:
     SPtr<Mesh> mRenderTarget;
     
     HTexture mTexture;
-    Vector<SPtr<Mesh>> mMeshes;
-    SPtr<Renderable> mRenderable;
+    Map<SPtr<Renderable>, Transform> mRenderables;
     SPtr<DefaultMaterial> mMaterial;
 
     SPtr<Camera> mCamera;
