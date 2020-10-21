@@ -91,6 +91,45 @@ public:
         return mAspect;
     }
 
+    Vec3 ProjectRayOrigin(const Vec2i& pos, const Vec2i& viewport) const
+    {
+        Vec2 cPos(pos.x, pos.y);
+        Vec2 viewportSize(viewport.x, viewport.y);
+
+        // normalize the coordinates
+        cPos *= 2.0f / viewportSize;
+        cPos -= 1.0f;
+        cPos.y *= -1.0f;
+
+
+        Vec3 ray;
+        ray.x = cPos.x * float(viewport.x) / float(viewport.y);
+        ray.y = cPos.y;
+        ray.z = mNear;
+
+        ray += mPosition;
+
+        return ray + mPosition;
+    }
+
+    Vec3 ProjectRayNormal(const Vec2i& pos, const Vec2i& viewport) const
+    {
+        Vec2 cPos(pos.x, pos.y);
+        Vec2 viewportSize(viewport.x, viewport.y);
+
+        // normalize the coordinates
+        cPos *= 2.0f / viewportSize;
+        cPos -= 1.0f;
+        cPos.y *= -1.0f;
+
+        auto view = GetView();
+        Vec3 ray;
+
+        // Figure this out
+
+        return ray;
+    }
+
 private:
     bool mDirty;
     Vec3 mPosition;
