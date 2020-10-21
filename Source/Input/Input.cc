@@ -58,9 +58,6 @@ void Input::OnMouseButtonEvent(InputMouseButtonEvent* button)
         else
             mButtonMask &= ~SDL_BUTTON(button->GetButton());
     }
-
-    std::cout << std::oct << mButtonMask << std::endl;
-
 }
 
 } // namespace Solis
