@@ -133,6 +133,29 @@ static const char* gFragmentShaderSource =
     "   color = tex.rgb;"
     "   normalOut = normal;"
     "}";
+
+//TODO: instance this
+static const char* gLightVShaderSource =
+    "#version 430 core\n" 
+    "out vec3 uPos;\n"
+    "void main() {\n"
+    "   gl_Position = vec4(uPos, 1.0);\n" 
+    "   uvs = inUV;\n"
+    "   normal = (inNormal + 1.0) / 2.0;\n"
+    "}"; 
+
+static const char* gLightFShaderSource =
+    "#version 430 core\n" 
+    "uniform sampler2D uSampler;"
+    "in vec2 uvs;"
+    "in vec3 normal;\n"
+    "layout(location = 0) out vec3 color;" 
+    "layout(location = 1) out vec3 normalOut;" 
+    "void main() {"
+    "   vec4 tex = texture(uSampler, uvs);"
+    "   color = tex.rgb;"
+    "   normalOut = normal;"
+    "}";
     
 static const char* gPassthroughShaderSource = 
     "#version 430 core\n" 
